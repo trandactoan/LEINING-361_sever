@@ -13,13 +13,13 @@ async function bootstrap() {
     .build();
 
   app.enableCors({
-    origin: ['http://localhost:3000', process.env.FE_DOMAIN], // allowed origins
+    origin: ['http://localhost:8080', process.env.FE_DOMAIN], // allowed origins
     methods: 'GET,POST,PUT,DELETE',
     credentials: true, // allow cookies if needed
   });
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 8080);
 }
 bootstrap();
