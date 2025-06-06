@@ -1,19 +1,22 @@
-# Use an official Node.js runtime as base image
 FROM node:18-alpine
 
-# Set working directory
 WORKDIR /usr/src/app
 
-# Copy package files and install only production dependencies
+# Copy package.json and package-lock.json
 COPY package*.json ./
-RUN npm install --production
 
-# Copy the rest of the app and build it
+# Install all dependencies (dev + prod)
+RUN npm install
+
+# Copy all source files
 COPY . .
+
+# Build the app (nest CLI is now available)
 RUN npm run build
 
-# App runs on port 3000
+# Remove dev dependencies to slim image
+RUN npm prune --production
+
 EXPOSE 3000
 
-# Start the app
 CMD ["node", "dist/main"]
