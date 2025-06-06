@@ -17,6 +17,6 @@ RUN npm run build
 # Remove dev dependencies to slim image
 RUN npm prune --production
 
-EXPOSE 8080
+EXPOSE 3000
 
 CMD ["node", "dist/main"]
