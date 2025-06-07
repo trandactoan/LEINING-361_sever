@@ -13,7 +13,7 @@ async function bootstrap() {
     .build();
 
   app.enableCors({
-    origin: ['http://localhost:3000', process.env.FE_DOMAIN], // allowed origins
+    origin: '*', // allowed origins
     methods: 'GET,POST,PUT,DELETE',
     credentials: true, // allow cookies if needed
   });
