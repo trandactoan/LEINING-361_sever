@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from './modules/app/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -13,7 +13,7 @@ async function bootstrap() {
     .build();
 
   app.enableCors({
-    origin: '*', // allowed origins
+    origin: ['http://localhost:3000', process.env.FE_DOMAIN], // allowed origins
     methods: 'GET,POST,PUT,DELETE',
     credentials: true, // allow cookies if needed
   });
