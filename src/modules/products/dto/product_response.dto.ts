@@ -1,18 +1,20 @@
 import { Product } from '../product.schema';
 
 export class ProductResponseDto {
-  _id: string;
+  id: string;
+  name: string;
   categoryId: string | undefined;
   price: number | undefined;
   originalPrice: number | undefined;
   image: string | undefined;
-  descriptions: { title: string | undefined; content: string | undefined }[];
+  descriptions: { title: string; content: string }[];
   sizes: string[];
   colors: { name: string | undefined; hex: string | undefined }[];
 
   constructor(product: Product) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-    this._id = product._id?.toString()!;
+    this.id = product._id?.toString()!;
+    this.name = product.name;
     this.categoryId = product.categoryId?.toString();
     this.price = product.price;
     this.originalPrice = product.originalPrice;

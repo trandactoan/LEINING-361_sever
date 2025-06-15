@@ -8,6 +8,11 @@ import { ProductResponseDto } from './dto/product_response.dto';
 export class ProductController {
   constructor(private productService: ProductService) {}
 
+  @Get()
+  async getAllProducts(): Promise<ProductResponseDto[]> {
+    return await this.productService.getAll();
+  }
+
   @Get('by-category/:category_id')
   async getProductsByCategory(
     @Param('category_id') category_id: string,

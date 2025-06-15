@@ -27,4 +27,8 @@ export class ProductService extends BaseService<Product> {
     const product = await this.productModel.findById(productObjectId).exec();
     return new ProductResponseDto(product!);
   }
+  async getAll(): Promise<ProductResponseDto[]> {
+    const products = await this.productModel.find().exec();
+    return products.map((result) => new ProductResponseDto(result));
+  }
 }

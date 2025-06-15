@@ -14,6 +14,9 @@ export class Product {
   categoryId: string;
 
   @Prop()
+  name: string;
+
+  @Prop()
   price: number;
 
   @Prop()
