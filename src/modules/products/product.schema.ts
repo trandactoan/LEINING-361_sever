@@ -34,7 +34,7 @@ export class Product {
     ],
     default: [],
   })
-  descriptions: { title: string; content: string }[];
+  details: { title: string; content: string }[];
 
   @Prop()
   sizes: string[];

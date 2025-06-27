@@ -7,7 +7,7 @@ export class ProductResponseDto {
   price: number | undefined;
   originalPrice: number | undefined;
   image: string | undefined;
-  descriptions: { title: string; content: string }[];
+  details: { title: string; content: string }[];
   sizes: string[];
   colors: { name: string | undefined; hex: string | undefined }[];
 
@@ -24,7 +24,7 @@ export class ProductResponseDto {
     } else {
       this.image = product.image;
     }
-    this.descriptions = product.descriptions!;
+    this.details = product.details!;
     this.sizes = product.sizes!;
     this.colors = product.colors!;
   }
