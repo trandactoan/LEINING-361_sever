@@ -23,7 +23,7 @@ export class Product {
   originalPrice: number;
 
   @Prop()
-  image: string;
+  images: string[];
 
   @Prop({
     type: [

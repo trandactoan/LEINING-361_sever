@@ -6,6 +6,9 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from '../users/user.module';
 import { ProductModule } from '../products/product.module';
 import { CategoryModule } from '../categories/category.module';
+import { ZnsModule } from '../zns/zns.module';
+import { TokenModule } from 'src/common/modules/tokens/token.module';
+import { ImageModule } from 'src/common/modules/images/image.module';
 
 @Module({
   imports: [
@@ -16,6 +19,9 @@ import { CategoryModule } from '../categories/category.module';
     UserModule,
     ProductModule,
     CategoryModule,
+    ZnsModule,
+    TokenModule,
+    ImageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
