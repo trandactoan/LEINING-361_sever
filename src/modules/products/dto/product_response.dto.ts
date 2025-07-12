@@ -1,5 +1,6 @@
 import { Product } from '../product.schema';
-
+import * as dotenv from 'dotenv';
+dotenv.config();
 export class ProductResponseDto {
   id: string;
   name: string;
@@ -20,7 +21,7 @@ export class ProductResponseDto {
     this.originalPrice = product.originalPrice;
     const BASE_URL = process.env.BASE_IMAGE_URL + 'public/image/';
     this.images = product.images.map((image) => {
-      if (image && image.startsWith('http')) {
+      if (image && !image.startsWith('http')) {
         return BASE_URL + image;
       } else {
         return image;

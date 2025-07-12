@@ -62,7 +62,6 @@ export class ZnsClient {
     templateId: string,
   ): Promise<any> {
     const token = await this.getValidAccessToken();
-    console.log('This is phone number: ' + phoneNumber);
     const result = await axios.post(
       process.env.ZNS_SEND_URL!,
       {
@@ -80,8 +79,6 @@ export class ZnsClient {
         },
       },
     );
-    console.log('This is result');
-    console.log(result);
     return result.data;
   }
 }

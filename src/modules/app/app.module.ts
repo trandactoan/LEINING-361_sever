@@ -9,11 +9,16 @@ import { CategoryModule } from '../categories/category.module';
 import { ZnsModule } from '../zns/zns.module';
 import { TokenModule } from 'src/common/modules/tokens/token.module';
 import { ImageModule } from 'src/common/modules/images/image.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: '/var/www/public/image',
+      serveRoot: '/image',
     }),
     MongooseModule.forRoot(process.env.MONGO_URI ?? ''),
     UserModule,

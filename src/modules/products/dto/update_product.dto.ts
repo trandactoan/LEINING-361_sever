@@ -16,4 +16,8 @@ export class UpdateProductDto {
   @IsOptional()
   @IsString()
   images?: string[];
+
+  @IsOptional()
+  @IsString()
+  colors?: string[];
 }
