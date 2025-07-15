@@ -8,7 +8,7 @@ export class Token {
   name: string;
 
   @Prop()
-  accessToken: string;
+  token: string;
 
   @Prop()
   expiredDate: number;

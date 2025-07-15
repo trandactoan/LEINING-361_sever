@@ -21,7 +21,6 @@ export class ZnsClient {
         },
       },
     );
-
     const {
       access_token,
       expires_in,
@@ -35,26 +34,32 @@ export class ZnsClient {
     };
   }
   async getValidAccessToken(): Promise<string> {
-    const tokenDoc = await this.tokenService.getToken(
-      TokenNameConstant.ZNS_TOKEN,
+    const accessToken = await this.tokenService.getToken(
+      TokenNameConstant.ZNS_ACCESS_TOKEN,
     ); // Assuming only 1 OA
 
-    if (!tokenDoc) throw new Error('No token stored.');
+    const refreshToken = await this.tokenService.getToken(
+      TokenNameConstant.ZNS_REFRESH_TOKEN,
+    );
+
+    if (!accessToken) throw new Error('No token stored.');
 
     const now = Date.now();
     const buffer = 60 * 1000; // 1 minute buffer
 
-    if (now >= tokenDoc.expiredDate - buffer) {
+    if (now >= accessToken.expiredDate - buffer) {
       const refreshed = await this.refreshAccessToken(
         process.env.ZALO_APP_ID!,
-        process.env.ZNS_REFRESH_TOKEN!,
+        refreshToken.token,
       );
-      tokenDoc.accessToken = refreshed.access_token;
-      tokenDoc.expiredDate = refreshed.expires_at;
-      await this.tokenService.update(tokenDoc._id.toString(), tokenDoc);
-      return tokenDoc.accessToken;
+      accessToken.token = refreshed.access_token;
+      accessToken.expiredDate = refreshed.expires_at;
+      refreshToken.token = refreshed.refresh_token;
+      await this.tokenService.update(accessToken._id.toString(), accessToken);
+      await this.tokenService.update(refreshToken._id.toString(), refreshToken);
+      return accessToken.token;
     }
-    return tokenDoc.accessToken;
+    return accessToken.token;
   }
   async sendZNS(
     phoneNumber: string,
