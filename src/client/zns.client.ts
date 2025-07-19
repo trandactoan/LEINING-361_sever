@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { TokenService } from 'src/common/modules/tokens/token.service';
 import { TokenNameConstant } from 'src/constants/token-name.constant';
@@ -84,6 +84,15 @@ export class ZnsClient {
         },
       },
     );
+    console.log(result);
+    if (
+      Object.prototype.hasOwnProperty.call(result.data, 'error') &&
+      result.data.error != 0
+    ) {
+      throw new BadRequestException(
+        'Send zns failed with error message: ' + result.data.message,
+      );
+    }
     return result.data;
   }
 }

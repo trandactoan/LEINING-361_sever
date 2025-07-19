@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './modules/app/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as express from 'express';
+import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -13,13 +14,14 @@ async function bootstrap() {
     .build();
 
   app.enableCors({
-    origin: '*', // allowed origins
+    origin: '*',
     methods: 'GET,POST,PUT,DELETE,PATCH',
-    credentials: true, // allow cookies if needed
+    credentials: true,
   });
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
   app.use(express.static('/var/www/app/public'));
+  app.useGlobalFilters(new AllExceptionsFilter());
   await app.listen(process.env.PORT || 3000, '0.0.0.0');
 }
 bootstrap();
