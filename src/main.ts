@@ -14,10 +14,22 @@ async function bootstrap() {
     .build();
 
   app.enableCors({
-    origin: '*',
-    methods: 'GET,POST,PUT,DELETE,PATCH,OPTIONS',
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        'http://localhost:3000',
+        'http://localhost:4200',
+        'https://h5.zdn.vn',
+        'https://leiningwebadmin.netlify.app',
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`Not allowed by CORS for ${origin}`), false);
+      }
+    },
     credentials: true,
   });
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
   app.use(express.static('/var/www/app/public'));
