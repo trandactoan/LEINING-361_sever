@@ -46,6 +46,7 @@ export class ProductService extends BaseService<Product> {
     const result = await this.productModel.findOneAndUpdate(
       { _id: objectId },
       { $set: product },
+      { new: true, runValidators: true },
     );
     return new ProductResponseDto(result!);
   }

@@ -18,6 +18,9 @@ export class UpdateProductDto {
   images?: string[];
 
   @IsOptional()
+  colors?: { name: string | undefined; hex: string | undefined }[];
+
+  @IsOptional()
   @IsString()
-  colors?: string[];
+  sizes?: string[];
 }
