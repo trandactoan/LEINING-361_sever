@@ -6,6 +6,7 @@ export type ProductDocument = Product & Document;
 @Schema()
 export class Product {
   _id?: Types.ObjectId;
+
   @Prop({
     type: Types.ObjectId,
     ref: 'Category',
@@ -13,7 +14,7 @@ export class Product {
   })
   categoryId: string;
 
-  @Prop()
+  @Prop({ required: true })
   name: string;
 
   @Prop()
@@ -22,7 +23,7 @@ export class Product {
   @Prop()
   originalPrice: number;
 
-  @Prop()
+  @Prop({ type: [String], default: [] })
   images: string[];
 
   @Prop({
@@ -36,7 +37,7 @@ export class Product {
   })
   details: { title: string; content: string }[];
 
-  @Prop()
+  @Prop({ type: [String], default: [] })
   sizes: string[];
 
   @Prop({
@@ -46,8 +47,24 @@ export class Product {
         hex: { type: String },
       },
     ],
+    default: [],
   })
   colors: { name: string; hex: string }[];
+
+  @Prop({ type: Boolean, default: false })
+  hasVariants: boolean;
+
+  @Prop({ type: Types.ObjectId, ref: 'Brand' })
+  brandId?: string;
+
+  @Prop()
+  sizeGuide?: string;
+
+  @Prop({ default: new Date() })
+  createdAt: Date;
+
+  @Prop({ default: new Date() })
+  updatedAt: Date;
 }
 
 export const ProductSchema = SchemaFactory.createForClass(Product);

@@ -10,6 +10,7 @@ import { ZnsModule } from '../zns/zns.module';
 import { TokenModule } from 'src/common/modules/tokens/token.module';
 import { ImageModule } from 'src/common/modules/images/image.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { OrdersModule } from '../orders/orders.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     UserModule,
     ProductModule,
     CategoryModule,
+    OrdersModule,
     ZnsModule,
     TokenModule,
     ImageModule,

@@ -5,16 +5,19 @@ import {
   Delete,
   UploadedFile,
   UseInterceptors,
-  Body,
   BadRequestException,
   Param,
+  Get,
+  StreamableFile,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname, join } from 'path';
+import { extname, join, resolve } from 'path';
 import * as fs from 'fs';
 
-const IMAGE_PATH = process.env.IMAGE_PATH || 'var/www/public/image';
+const DEFAULT_IMAGE_SUBPATH = join('var', 'www', 'public', 'image');
+const IMAGE_PATH = resolve(process.env.IMAGE_PATH || join(process.cwd(), DEFAULT_IMAGE_SUBPATH));
+const BASE_IMAGE_URL = process.env.BASE_IMAGE_URL || 'http://localhost:8080/';
 
 @Controller('image')
 export class ImageController {
@@ -23,7 +26,17 @@ export class ImageController {
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
-        destination: IMAGE_PATH,
+        destination: (req, file, callback) => {
+          // Ensure destination exists before multer writes the file
+          try {
+            if (!fs.existsSync(IMAGE_PATH)) {
+              fs.mkdirSync(IMAGE_PATH, { recursive: true });
+            }
+            callback(null, IMAGE_PATH);
+          } catch (err) {
+            callback(err as any, IMAGE_PATH);
+          }
+        },
         filename: (req, file, callback) => {
           const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
           callback(null, uniqueName);
@@ -39,8 +52,8 @@ export class ImageController {
 
     return {
       filename: file.filename,
-      path: `${process.env.BASE_IMAGE_URL}${IMAGE_PATH}/${file.filename}`,
-      url: `/image/${file.filename}`, // e.g. for frontend usage
+      path: BASE_IMAGE_URL + 'image/' +file.filename,
+      url: join('image', file.filename), // e.g. for frontend usage
     };
   }
 
@@ -48,11 +61,24 @@ export class ImageController {
   @Delete('remove/:filename')
   removeImage(@Param('filename') filename: string) {
     const filePath = join(IMAGE_PATH, filename);
+    try {
+      if (!fs.existsSync(filePath)) {
+        throw new BadRequestException('File not found');
+      }
+      fs.unlinkSync(filePath);
+      return { message: 'File deleted', filename };
+    } catch (err) {
+      throw new BadRequestException(`Failed to delete file: ${err?.message || err}`);
+    }
+  }
+
+  @Get(':filename')
+  getImage(@Param('filename') filename: string): StreamableFile {
+    const filePath = join(IMAGE_PATH, filename);
     if (!fs.existsSync(filePath)) {
       throw new BadRequestException('File not found');
     }
-
-    fs.unlinkSync(filePath);
-    return { message: 'File deleted', filename };
+    const file = fs.createReadStream(filePath);
+    return new StreamableFile(file);
   }
 }

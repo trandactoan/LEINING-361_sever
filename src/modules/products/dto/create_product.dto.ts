@@ -1,9 +1,8 @@
-import { IsOptional, IsString, IsNumber } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsBoolean, IsArray } from 'class-validator';
 
 export class CreateProductDto {
-  @IsOptional()
   @IsString()
-  name?: string;
+  name: string;
 
   @IsOptional()
   @IsNumber()
@@ -14,16 +13,40 @@ export class CreateProductDto {
   originalPrice?: number;
 
   @IsOptional()
-  @IsString()
+  @IsArray()
   images?: string[];
 
   @IsString()
   categoryId: string;
 
   @IsOptional()
-  colors?: { name: string | undefined; hex: string | undefined }[];
+  @IsArray()
+  details?: { title: string; content: string }[];
+
+  @IsOptional()
+  @IsArray()
+  colors?: { name: string; hex: string }[];
+
+  @IsOptional()
+  @IsArray()
+  sizes?: string[];
+
+  @IsOptional()
+  @IsBoolean()
+  hasVariants?: boolean;
 
   @IsOptional()
   @IsString()
-  sizes?: string[];
+  sizeGuide?: string;
+
+  @IsOptional()
+  @IsArray()
+  variants?: {
+    attributes: { name: string; value: string }[];
+    price: number;
+    originalPrice?: number;
+    stock: number;
+    sku: string;
+    variationImage?: string;
+  }[];
 }

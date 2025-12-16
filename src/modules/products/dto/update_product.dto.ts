@@ -23,4 +23,11 @@ export class UpdateProductDto {
   @IsOptional()
   @IsString()
   sizes?: string[];
+
+  @IsOptional()
+  @IsString()
+  sizeGuide?: string;
+
+  @IsOptional()
+  variants?: any[];
 }

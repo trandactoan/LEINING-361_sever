@@ -6,5 +6,6 @@ import { ImageController } from './image.controller';
   imports: [],
   providers: [ImageService],
   controllers: [ImageController],
+  exports: [ImageService],
 })
 export class ImageModule {}

@@ -17,6 +17,7 @@ async function bootstrap() {
     origin: (origin, callback) => {
       const allowedOrigins = [
         'http://localhost:3000',
+        'http://localhost:2999',
         'http://localhost:4200',
         'https://h5.zdn.vn',
         'https://leiningwebadmin.netlify.app',
