@@ -4,4 +4,5 @@ export class CreateMacRequestDto {
   amount: string;
   desc: string;
   item: string;
+  method: string;
 }
