@@ -11,6 +11,7 @@ import { TokenModule } from 'src/common/modules/tokens/token.module';
 import { ImageModule } from 'src/common/modules/images/image.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { OrdersModule } from '../orders/orders.module';
+import { CommonModule } from '../common/common.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { OrdersModule } from '../orders/orders.module';
     ZnsModule,
     TokenModule,
     ImageModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [AppService],

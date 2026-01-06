@@ -70,6 +70,9 @@ export class Order {
     })
     status: string;
 
+    @Prop({ required: false })
+    checkoutSdkOrderId?: string;
+
     @Prop({ default: new Date() })
     createdAt: Date;
 

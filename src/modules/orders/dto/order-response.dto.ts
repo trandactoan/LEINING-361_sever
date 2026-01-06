@@ -20,6 +20,7 @@ export class OrderResponseDto {
     totalAmount: number;
     totalItems: number;
     status: string;
+    checkoutSdkOrderId?: string;
     createdAt: Date;
     updatedAt: Date;
 
@@ -43,6 +44,7 @@ export class OrderResponseDto {
         this.totalAmount = order.totalAmount;
         this.totalItems = order.totalItems;
         this.status = order.status;
+        this.checkoutSdkOrderId = order.checkoutSdkOrderId;
         this.createdAt = order.createdAt;
         this.updatedAt = order.updatedAt;
     }

@@ -107,4 +107,18 @@ export class OrdersService {
 
         return new OrderResponseDto(order);
     }
+
+    async updateCheckoutSdkOrderId(id: string, checkoutSdkOrderId: string): Promise<OrderResponseDto> {
+        const order = await this.orderModel.findByIdAndUpdate(
+            id,
+            { checkoutSdkOrderId, updatedAt: new Date() },
+            { new: true }
+        );
+
+        if (!order) {
+            throw new NotFoundException(`Order ${id} not found`);
+        }
+
+        return new OrderResponseDto(order);
+    }
 }
