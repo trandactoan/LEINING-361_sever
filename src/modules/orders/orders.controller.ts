@@ -89,4 +89,104 @@ export class OrdersController {
         return { message: "Đã liên kết đơn hàng thành công!" };
     }
 
+    @Post("/callback")
+    async handleCallback(@Body() payload: any): Promise<{ returnCode: number; returnMessage: string }> {
+        try {
+            console.log("Received callback payload:", payload);
+            const { data, overallMac, mac } = payload;
+            const { orderId, appId, extradata, method } = data;// Tạo MAC
+            console.log("Callback data:", { orderId, appId, extradata, method });
+            const dataOverallMac = Object.keys(data)
+                .sort()
+                .map((key) => `${key}=${data[key]}`)
+                .join("&");
+            console.log("Data for MAC computation:", dataOverallMac);
+            const validOverallMac = createHmac(
+                "sha256",
+                process.env.CHECKOUT_SDK_PRIVATE_KEY!
+            ).update(dataOverallMac)
+            .digest("hex");
+            console.log("Computed MAC:", { validOverallMac, overallMac });
+            // Xác thực MAC
+            if (overallMac === validOverallMac) {
+                // Lưu ý 1. Cách lấy `myOrderId`
+                const { myOrderId } = JSON.parse(decodeURIComponent(extradata));
+                console.log("Parsed extradata:", { myOrderId });
+                const order = await this.ordersService.findOne(myOrderId);
+                console.log("Fetched order:", order);
+                if (order) {
+                    order.status = "success";
+                    await this.ordersService.updateStatus(myOrderId, order.status);
+
+                    // Call Zalo payment status update API
+                    await this.updateOrderPaymentStatus(appId, orderId, 1, method);
+
+                    // Lưu ý 2. Cách trả về kết quả
+                    console.log("Order status updated successfully");
+                    return {
+                        returnCode: 1,
+                        returnMessage: "Đã cập nhật trạng thái đơn hàng thành công!",
+                    };
+                } else {
+                throw Error("Không tìm thấy đơn hàng");
+                }
+            } else {
+                throw Error("MAC không hợp lệ");
+            }
+        } catch (error) {
+            return {
+                returnCode: 0,
+                returnMessage: String(error),
+            };
+        }
+    }
+
+    /**
+     * Update order payment status to Zalo
+     * @param appId - Mini app ID
+     * @param orderId - Checkout SDK order ID
+     * @param resultCode - Transaction status: 1 (Success), 0 (Refunded), -1 (Failed)
+     * @param paymentMethod - Payment method from callback (COD, bank_transfer, or custom)
+     */
+    private async updateOrderPaymentStatus(
+        appId: string,
+        orderId: string,
+        resultCode: 1 | 0 | -1,
+        paymentMethod?: string
+    ): Promise<void> {
+        try {
+            // Determine the correct endpoint based on payment method
+            let endpoint = '';
+            if (paymentMethod === 'COD' || paymentMethod === 'COD_SANDBOX') {
+                endpoint = `https://payment-mini.zalo.me/api/transaction/${appId}/cod-callback-payment`;
+            } else if (paymentMethod === 'bank_transfer') {
+                endpoint = `https://payment-mini.zalo.me/api/transaction/${appId}/bank-callback-payment`;
+            } else {
+                endpoint = `https://payment-mini.zalo.me/api/transaction/${appId}/custom-callback-payment`;
+            }
+
+            // Create MAC for authentication
+            const dataMac = `appId=${appId}&orderId=${orderId}&resultCode=${resultCode}&privateKey=${process.env.CHECKOUT_SDK_PRIVATE_KEY}`;
+            const mac = createHmac('sha256', process.env.CHECKOUT_SDK_PRIVATE_KEY!)
+                .update(dataMac)
+                .digest('hex');
+
+            // Call Zalo payment status update API
+            const response = await axios.post(endpoint, {
+                appId,
+                orderId,
+                resultCode,
+                mac
+            });
+
+            console.log('Zalo payment status update response:', response.data);
+
+            if (response.data.error !== 0) {
+                console.error('Failed to update Zalo payment status:', response.data.msg);
+            }
+        } catch (error) {
+            console.error('Error updating Zalo payment status:', error);
+            // Don't throw error to prevent callback from failing
+        }
+    }
 }

@@ -1,7 +1,7 @@
 export class CreateMacRequestDto {
   amount: string;
   desc: string;
-  item: string;
-  extradata: string;
-  method: string;
+  item: Array<{ id: string; amount: string }>;
+  extradata: object;
+  method: object;
 }
