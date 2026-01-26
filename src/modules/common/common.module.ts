@@ -1,10 +1,9 @@
 import { Module } from '@nestjs/common';
 import { CommonController } from './common.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { Order, OrderSchema } from '../orders/order.schema';
+import { ZnsModule } from '../zns/zns.module';
 
 @Module({
-  imports: [],
+  imports: [ZnsModule],
   providers: [],
   controllers: [CommonController],
 })

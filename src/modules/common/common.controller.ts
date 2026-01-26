@@ -1,13 +1,13 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Post } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { createHmac } from 'crypto';
 import { CreateMacRequestDto } from './dto/create_mac_request.dto';
-import { Console } from 'console';
+import { ZnsClient } from 'src/client/zns.client';
 
 @ApiTags('Common')
 @Controller('common')
 export class CommonController {
-  constructor() {}
+  constructor(private readonly znsClient: ZnsClient) {}
   @Post("/mac")
   async GetMac(@Body() CreateMacRequestDto: CreateMacRequestDto) {
     // Validate that the private key is configured
@@ -40,5 +40,17 @@ export class CommonController {
   async HandleCallback(@Body() payload: any) {
     console.log("Received callback:", payload);
     return { message: "Callback received" };
+  }
+
+  @Post("/decode-phone")
+  @ApiOperation({ summary: 'Decode phone number from Zalo Mini App token' })
+  async DecodePhone(@Body() body: { accessToken: string; phoneToken: string }) {
+    console.log("📱 Decoding phone number...");
+    const phone = await this.znsClient.decodePhoneNumber(
+      body.accessToken,
+      body.phoneToken,
+    );
+    console.log("📞 Decoded phone:", phone);
+    return { phone };
   }
 }

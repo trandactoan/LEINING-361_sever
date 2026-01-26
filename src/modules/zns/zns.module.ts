@@ -8,5 +8,6 @@ import { TokenModule } from 'src/common/modules/tokens/token.module';
   imports: [TokenModule],
   providers: [ZnsService, ZnsClient],
   controllers: [ZnsController],
+  exports: [ZnsClient],
 })
 export class ZnsModule {}

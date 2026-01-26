@@ -95,4 +95,38 @@ export class ZnsClient {
     }
     return result.data;
   }
+
+  /**
+   * Decode phone number from Mini App phoneToken
+   * @param accessToken - Access token from Mini App SDK getAccessToken()
+   * @param phoneToken - Token from Mini App SDK getPhoneNumber()
+   * @returns Phone number string or null if failed
+   */
+  async decodePhoneNumber(
+    accessToken: string,
+    phoneToken: string,
+  ): Promise<string | null> {
+    try {
+      const response = await axios.get(
+        'https://graph.zalo.me/v2.0/me/info',
+        {
+          headers: {
+            access_token: accessToken,
+            code: phoneToken,
+            secret_key: process.env.ZALO_APP_SECRET_KEY,
+          },
+        },
+      );
+
+      if (response.data?.error === 0 && response.data?.data?.number) {
+        return response.data.data.number;
+      }
+
+      console.log('Failed to decode phone number:', response.data);
+      return null;
+    } catch (error) {
+      console.error('Error decoding phone number:', error);
+      return null;
+    }
+  }
 }

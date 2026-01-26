@@ -8,7 +8,7 @@ export class BaseService<T> {
     return this.model.find();
   }
 
-  async findOne(id: string): Promise<T> {
+  async findOne(id: string): Promise<T | null> {
     return this.model.findById(id);
   }
 
@@ -16,11 +16,11 @@ export class BaseService<T> {
     return this.model.create(data);
   }
 
-  async update(id: string, data: Partial<T>): Promise<T> {
+  async update(id: string, data: Partial<T>): Promise<T | null> {
     return this.model.findByIdAndUpdate(id, data, { new: true });
   }
 
-  async delete(id: string): Promise<T> {
+  async delete(id: string): Promise<T | null> {
     return this.model.findByIdAndDelete(id);
   }
 }
