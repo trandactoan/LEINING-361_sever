@@ -34,13 +34,20 @@ export class UserService extends BaseService<User> {
 
     if (existingUser) {
       // Update existing user with latest Zalo user info
+      const updateData: Partial<User> = {
+        username: zaloUserInfo.name,
+        avatar: zaloUserInfo.avatar,
+      };
+
+      // Only update phone if provided
+      if (zaloUserInfo.phone) {
+        updateData.phone = zaloUserInfo.phone;
+      }
+
       const updated = await this.userModel
         .findOneAndUpdate(
           { zaloId: zaloUserInfo.id },
-          {
-            username: zaloUserInfo.name,
-            avatar: zaloUserInfo.avatar,
-          },
+          updateData,
           { new: true }
         )
         .exec();
@@ -52,6 +59,7 @@ export class UserService extends BaseService<User> {
       zaloId: zaloUserInfo.id,
       username: zaloUserInfo.name,
       avatar: zaloUserInfo.avatar,
+      phone: zaloUserInfo.phone,
     });
     return newUser.save();
   }

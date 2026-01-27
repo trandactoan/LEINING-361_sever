@@ -41,4 +41,9 @@ export class ZaloUserInfoDto {
   @IsString()
   @ApiPropertyOptional({ type: String, description: 'Access token from Mini App SDK getAccessToken()' })
   accessToken?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional({ type: String, description: 'Decoded phone number from Zalo' })
+  phone?: string;
 }
