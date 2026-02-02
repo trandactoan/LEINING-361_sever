@@ -52,6 +52,13 @@ export class UserController {
     return { message: 'User deleted successfully' };
   }
 
+  @Get('zalo/:zaloId')
+  @ApiOperation({ summary: 'Get user by Zalo ID' })
+  @ApiResponse({ status: 200, description: 'User found or null' })
+  async getUserByZaloId(@Param('zaloId') zaloId: string): Promise<User | null> {
+    return await this.userService.findByZaloId(zaloId);
+  }
+
   @Post('auth/zalo')
   @ApiOperation({ summary: 'Check if user exists by Zalo user info from getUserInfo() SDK' })
   @ApiResponse({ status: 200, description: 'User check completed' })
