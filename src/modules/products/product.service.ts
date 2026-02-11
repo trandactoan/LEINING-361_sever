@@ -163,6 +163,7 @@ export class ProductService extends BaseService<Product> {
                 stock: v.stock,
                 sku: v.sku,
                 variationImage: v.variationImage,
+                soldCount: v.soldCount || 0
               },
             },
             { new: true, runValidators: true },
@@ -178,6 +179,7 @@ export class ProductService extends BaseService<Product> {
             stock: v.stock,
             sku: v.sku,
             variationImage: v.variationImage,
+            soldCount: v.soldCount || 0,
             createdAt: new Date(),
           });
           if (created._id) processedIds.push(created._id.toString());
@@ -252,6 +254,7 @@ export class ProductService extends BaseService<Product> {
           stock: variant.stock,
           sku: variant.sku,
           variationImage,
+          soldCount: variant.soldCount || 0,
           createdAt: new Date(),
         };
         

@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsNumber } from 'class-validator';
+import { IsOptional, IsString, IsNumber, isNumber } from 'class-validator';
 
 export class UpdateProductDto {
   @IsOptional()
@@ -29,5 +29,16 @@ export class UpdateProductDto {
   sizeGuide?: string;
 
   @IsOptional()
+  @IsNumber()
+  stock?: number;
+
+  @IsOptional()
+  @IsNumber()
+  soldCount?: number;
+
+  @IsOptional()
   variants?: any[];
+
+  @IsOptional()
+  variantOptions?: { name: string; values: string[] }[];
 }

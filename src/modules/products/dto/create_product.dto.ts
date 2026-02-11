@@ -13,6 +13,14 @@ export class CreateProductDto {
   originalPrice?: number;
 
   @IsOptional()
+  @IsNumber()
+  stock?: number;
+
+  @IsOptional()
+  @IsNumber()
+  soldCount?: number;
+
+  @IsOptional()
   @IsArray()
   images?: string[];
 
@@ -46,7 +54,12 @@ export class CreateProductDto {
     price: number;
     originalPrice?: number;
     stock: number;
+    soldCount?: number;
     sku: string;
     variationImage?: string;
   }[];
+
+  @IsOptional()
+  @IsArray()
+  variantOptions?: { name: string; values: string[] }[];
 }

@@ -16,8 +16,10 @@ export class ProductResponseDto {
   sizes: string[];
   colors: { name: string; hex: string }[];
   hasVariants: boolean;
+  variantOptions?: { name: string; values: string[] }[];
   brandId?: string;
   sizeGuide?: string;
+  soldCount: number;
   variants?: ProductDetailDto[];
   createdAt: Date;
   updatedAt: Date;
@@ -40,11 +42,13 @@ export class ProductResponseDto {
     this.sizes = product.sizes || [];
     this.colors = product.colors || [];
     this.hasVariants = product.hasVariants;
+    this.variantOptions = product.variantOptions;
     this.brandId = product.brandId;
     this.sizeGuide = product.sizeGuide;
     if (this.sizeGuide && !this.sizeGuide.startsWith('http')) {
       this.sizeGuide = process.env.BASE_IMAGE_URL + 'image/' + this.sizeGuide;
     }
+    this.soldCount = product.soldCount || 0;
     variants?.map((variant)=>{
       if (variant.variationImage && !variant.variationImage.startsWith('http')) {
         variant.variationImage = process.env.BASE_IMAGE_URL + 'image/' + variant.variationImage;

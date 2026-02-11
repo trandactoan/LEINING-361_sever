@@ -54,11 +54,25 @@ export class Product {
   @Prop({ type: Boolean, default: false })
   hasVariants: boolean;
 
+  @Prop({
+    type: [
+      {
+        name: { type: String },
+        values: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  })
+  variantOptions: { name: string; values: string[] }[];
+
   @Prop({ type: Types.ObjectId, ref: 'Brand' })
   brandId?: string;
 
   @Prop()
   sizeGuide?: string;
+
+  @Prop({ type: Number, default: 0 })
+  soldCount: number;
 
   @Prop({ default: new Date() })
   createdAt: Date;
