@@ -84,7 +84,6 @@ export class ZnsClient {
         },
       },
     );
-    console.log(result);
     if (
       Object.prototype.hasOwnProperty.call(result.data, 'error') &&
       result.data.error != 0
@@ -122,7 +121,6 @@ export class ZnsClient {
         return response.data.data.number;
       }
 
-      console.log('Failed to decode phone number:', response.data);
       return null;
     } catch (error) {
       console.error('Error decoding phone number:', error);

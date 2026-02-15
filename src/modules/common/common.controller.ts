@@ -14,9 +14,7 @@ export class CommonController {
     if (!process.env.CHECKOUT_SDK_PRIVATE_KEY) {
       throw new Error('CHECKOUT_SDK_PRIVATE_KEY is not configured in environment variables');
     }
-    console.log("Data mac");
-    console.log(CreateMacRequestDto);
-    
+
     const dataMac = Object.keys(CreateMacRequestDto)
        .sort()
        .map(
@@ -32,25 +30,21 @@ export class CommonController {
                 .update(dataMac)
                 .digest("hex");
 
-    console.log("Generated MAC:", mac);
     return { mac };
   }
 
   @Post("/callback")
-  async HandleCallback(@Body() payload: any) {
-    console.log("Received callback:", payload);
+  async HandleCallback(@Body() _payload: any) {
     return { message: "Callback received" };
   }
 
   @Post("/decode-phone")
   @ApiOperation({ summary: 'Decode phone number from Zalo Mini App token' })
   async DecodePhone(@Body() body: { accessToken: string; phoneToken: string }) {
-    console.log("📱 Decoding phone number...");
     const phone = await this.znsClient.decodePhoneNumber(
       body.accessToken,
       body.phoneToken,
     );
-    console.log("📞 Decoded phone:", phone);
     return { phone };
   }
 }

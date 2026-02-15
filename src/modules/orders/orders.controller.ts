@@ -92,28 +92,20 @@ export class OrdersController {
     @Post("/callback")
     async handleCallback(@Body() payload: any): Promise<{ returnCode: number; returnMessage: string }> {
         try {
-            console.log("Received callback payload:", payload);
             const { data, overallMac, mac } = payload;
-            const { orderId, appId, extradata, method } = data;// Tạo MAC
-            console.log("Callback data:", { orderId, appId, extradata, method });
+            const { orderId, appId, extradata, method } = data;
             const dataOverallMac = Object.keys(data)
                 .sort()
                 .map((key) => `${key}=${data[key]}`)
                 .join("&");
-            console.log("Data for MAC computation:", dataOverallMac);
             const validOverallMac = createHmac(
                 "sha256",
                 process.env.CHECKOUT_SDK_PRIVATE_KEY!
             ).update(dataOverallMac)
             .digest("hex");
-            console.log("Computed MAC:", { validOverallMac, overallMac });
-            // Xác thực MAC
             if (overallMac === validOverallMac) {
-                // Lưu ý 1. Cách lấy `myOrderId`
                 const { myOrderId } = JSON.parse(decodeURIComponent(extradata));
-                console.log("Parsed extradata:", { myOrderId });
                 const order = await this.ordersService.findOne(myOrderId);
-                console.log("Fetched order:", order);
                 if (order) {
                     order.status = "success";
                     await this.ordersService.updateStatus(myOrderId, order.status);
@@ -121,8 +113,6 @@ export class OrdersController {
                     // Call Zalo payment status update API
                     await this.updateOrderPaymentStatus(appId, orderId, 1, method);
 
-                    // Lưu ý 2. Cách trả về kết quả
-                    console.log("Order status updated successfully");
                     return {
                         returnCode: 1,
                         returnMessage: "Đã cập nhật trạng thái đơn hàng thành công!",
@@ -178,8 +168,6 @@ export class OrdersController {
                 resultCode,
                 mac
             });
-
-            console.log('Zalo payment status update response:', response.data);
 
             if (response.data.error !== 0) {
                 console.error('Failed to update Zalo payment status:', response.data.msg);
