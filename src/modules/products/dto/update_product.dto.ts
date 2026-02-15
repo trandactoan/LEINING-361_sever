@@ -37,6 +37,10 @@ export class UpdateProductDto {
   soldCount?: number;
 
   @IsOptional()
+  @IsString()
+  sku?: string;
+
+  @IsOptional()
   variants?: any[];
 
   @IsOptional()

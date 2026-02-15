@@ -21,6 +21,10 @@ export class CreateProductDto {
   soldCount?: number;
 
   @IsOptional()
+  @IsString()
+  sku?: string;
+
+  @IsOptional()
   @IsArray()
   images?: string[];
 

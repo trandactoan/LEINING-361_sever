@@ -74,6 +74,9 @@ export class Product {
   @Prop({ type: Number, default: 0 })
   soldCount: number;
 
+  @Prop()
+  sku?: string;
+
   @Prop({ default: new Date() })
   createdAt: Date;
 

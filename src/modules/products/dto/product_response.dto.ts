@@ -20,6 +20,7 @@ export class ProductResponseDto {
   brandId?: string;
   sizeGuide?: string;
   soldCount: number;
+  sku?: string;
   variants?: ProductDetailDto[];
   createdAt: Date;
   updatedAt: Date;
@@ -49,6 +50,7 @@ export class ProductResponseDto {
       this.sizeGuide = process.env.BASE_IMAGE_URL + 'image/' + this.sizeGuide;
     }
     this.soldCount = product.soldCount || 0;
+    this.sku = product.sku;
     variants?.map((variant)=>{
       if (variant.variationImage && !variant.variationImage.startsWith('http')) {
         variant.variationImage = process.env.BASE_IMAGE_URL + 'image/' + variant.variationImage;
