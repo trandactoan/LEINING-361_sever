@@ -32,12 +32,6 @@ export class OrdersService {
                         throw new NotFoundException(`Variant ${item.variantId} not found`);
                     }
 
-                    if (variant.stock < item.quantity) {
-                        throw new BadRequestException(
-                            `Insufficient stock for ${item.productName}. Available: ${variant.stock}, Requested: ${item.quantity}`
-                        );
-                    }
-
                     // Update stock
                     variant.stock -= item.quantity;
                     await variant.save({ session });
