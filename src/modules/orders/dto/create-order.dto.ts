@@ -68,4 +68,12 @@ export class CreateOrderDto {
     @IsNumber()
     @IsNotEmpty()
     totalItems: number;
+
+    @IsString()
+    @IsOptional()
+    voucherCode?: string;
+
+    @IsNumber()
+    @IsOptional()
+    discountAmount?: number;
 }

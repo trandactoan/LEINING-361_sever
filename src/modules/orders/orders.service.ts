@@ -6,6 +6,7 @@ import { ProductDetail, ProductDetailDocument } from '../products/product_detail
 import { CreateOrderDto } from './dto/create-order.dto';
 import { OrderResponseDto } from './dto/order-response.dto';
 import { GoogleSheetsService } from './google-sheets.service';
+import { VoucherService } from '../vouchers/voucher.service';
 
 @Injectable()
 export class OrdersService {
@@ -15,6 +16,7 @@ export class OrdersService {
         @InjectModel(Order.name) private orderModel: Model<OrderDocument>,
         @InjectModel(ProductDetail.name) private productDetailModel: Model<ProductDetailDocument>,
         private googleSheetsService: GoogleSheetsService,
+        private voucherService: VoucherService,
     ) {}
 
     async createOrder(createOrderDto: CreateOrderDto): Promise<OrderResponseDto> {
@@ -57,6 +59,13 @@ export class OrdersService {
             await session.commitTransaction();
 
             this.logger.log(`Order ${order._id} created successfully`);
+
+            // Increment voucher usage if voucher was applied
+            if (createOrderDto.voucherCode) {
+                this.voucherService.incrementUsage(createOrderDto.voucherCode).catch(err => {
+                    this.logger.error(`Failed to increment voucher usage for ${createOrderDto.voucherCode}`, err.stack);
+                });
+            }
 
             // Append to Google Sheets (async, don't wait)
             this.googleSheetsService.appendOrderToSheet(order).catch(err => {

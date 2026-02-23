@@ -63,6 +63,12 @@ export class Order {
     @Prop({ required: true })
     totalItems: number;
 
+    @Prop()
+    voucherCode?: string;
+
+    @Prop({ default: 0 })
+    discountAmount: number;
+
     @Prop({
         type: String,
         enum: ['pending', 'confirmed', 'shipping', 'delivered', 'cancelled'],

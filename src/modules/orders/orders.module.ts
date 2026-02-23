@@ -5,6 +5,7 @@ import { OrdersService } from './orders.service';
 import { GoogleSheetsService } from './google-sheets.service';
 import { Order, OrderSchema } from './order.schema';
 import { ProductDetail, ProductDetailSchema } from '../products/product_detail.schema';
+import { VoucherModule } from '../vouchers/voucher.module';
 
 @Module({
     imports: [
@@ -12,6 +13,7 @@ import { ProductDetail, ProductDetailSchema } from '../products/product_detail.s
             { name: Order.name, schema: OrderSchema },
             { name: ProductDetail.name, schema: ProductDetailSchema },
         ]),
+        VoucherModule,
     ],
     controllers: [OrdersController],
     providers: [OrdersService, GoogleSheetsService],
