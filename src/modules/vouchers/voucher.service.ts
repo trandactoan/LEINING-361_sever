@@ -176,20 +176,23 @@ export class VoucherService {
   }
 
   calculateDiscount(voucher: Voucher, totalAmount: number): number {
+    if (voucher.discountType === 'free_shipping') {
+      // Shipping discount is handled on the frontend; product discount is 0
+      return 0;
+    }
+
     let discount = 0;
 
     if (voucher.discountType === 'percentage') {
       discount = (totalAmount * voucher.discountValue) / 100;
-      // Apply max discount cap if set
       if (voucher.maxDiscountAmount && discount > voucher.maxDiscountAmount) {
         discount = voucher.maxDiscountAmount;
       }
     } else {
-      // Fixed amount
+      // fixed
       discount = voucher.discountValue;
     }
 
-    // Discount cannot exceed total amount
     if (discount > totalAmount) {
       discount = totalAmount;
     }

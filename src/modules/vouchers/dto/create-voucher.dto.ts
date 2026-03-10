@@ -12,11 +12,12 @@ export class CreateVoucherDto {
   @IsString()
   description?: string;
 
-  @IsEnum(['percentage', 'fixed'])
-  discountType: 'percentage' | 'fixed';
+  @IsEnum(['percentage', 'fixed', 'free_shipping'])
+  discountType: 'percentage' | 'fixed' | 'free_shipping';
 
+  @IsOptional()
   @IsNumber()
-  discountValue: number;
+  discountValue?: number;
 
   @IsOptional()
   @IsNumber()

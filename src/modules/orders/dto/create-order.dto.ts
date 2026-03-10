@@ -73,6 +73,10 @@ export class CreateOrderDto {
     @IsOptional()
     voucherCode?: string;
 
+    @IsString()
+    @IsOptional()
+    shippingVoucherCode?: string;
+
     @IsNumber()
     @IsOptional()
     discountAmount?: number;

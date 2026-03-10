@@ -22,46 +22,40 @@ export class GoogleSheetsService {
 
     async appendOrderToSheet(order: Order): Promise<void> {
         try {
-            const spreadsheetId = process.env.GOOGLE_SHEET_ID; // Your Google Sheet ID from the URL
+            const spreadsheetId = process.env.GOOGLE_SHEET_ID;
 
-            // Format the order data according to your sheet structure
-            // Columns: Ngày | Tên | SĐT | ĐỊA CHỈ | MÀU | SIZE | NOTE | MÀU | Link
-            const rows = order.items.map(item => {
-                // Get variant attributes
+            // Format date as "HH:mm:ss DD/MM/YYYY"
+            const date = new Date(order.createdAt);
+            const pad = (n: number) => String(n).padStart(2, '0');
+            const formattedDate = `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())} ${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()}`;
+
+            // Format each item as "SKU-[màu]-[size]-sl", skipping empty attributes
+            const productsText = order.items.map(item => {
                 const attributes = item.variantAttributes || [];
-                const sizeAttr = attributes.find(attr => attr.name.toLowerCase() === 'size' || attr.name.toLowerCase() === 'kích thước');
-                const colorAttr = attributes.find(attr => attr.name.toLowerCase() === 'color' || attr.name.toLowerCase() === 'màu');
+                const sku = item.sku || item.productName;
+                // Collect only non-empty attribute values (color before size by convention)
+                const attrValues = attributes
+                    .map(attr => attr.value)
+                    .filter(v => v && v.trim() !== '');
+                return [sku, ...attrValues, String(item.quantity)].join('-');
+            }).join('\n');
 
-                // Format date as YYYY-MM-DD HH:mm:ss
-                const formattedDate = new Date(order.createdAt).toLocaleString('vi-VN', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    second: '2-digit'
-                });
+            // Columns: Ngày | Tên | SDT | ĐỊA CHỈ | Sản phẩm | Tổng bill
+            const row = [
+                formattedDate,       // Ngày
+                order.fullName,      // Tên
+                order.phoneNumber,   // SDT
+                order.address,       // ĐỊA CHỈ
+                productsText,        // Sản phẩm (all items, one per line)
+                order.totalAmount,   // Tổng bill
+            ];
 
-                return [
-                    formattedDate,                          // Ngày
-                    order.fullName,                         // Tên
-                    order.phoneNumber,                      // SĐT
-                    order.address,                          // ĐỊA CHỈ
-                    colorAttr?.value || '',                 // MÀU
-                    sizeAttr?.value || '',                  // SIZE
-                    `${item.productName} x${item.quantity}`, // NOTE
-                    item.sku || '',                         // MÀU (SKU or additional info)
-                    item.image || ''                        // Link (image URL)
-                ];
-            });
-
-            // Append rows to the sheet
             await this.sheets.spreadsheets.values.append({
                 spreadsheetId,
-                range: 'Gia lap trang thanh toan!A:I', // Updated sheet name
-                valueInputOption: 'RAW',
+                range: 'Gia lap trang thanh toan!A:F',
+                valueInputOption: 'USER_ENTERED',
                 requestBody: {
-                    values: rows,
+                    values: [row],
                 },
             });
 

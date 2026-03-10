@@ -66,6 +66,11 @@ export class OrdersService {
                     this.logger.error(`Failed to increment voucher usage for ${createOrderDto.voucherCode}`, err.stack);
                 });
             }
+            if (createOrderDto.shippingVoucherCode) {
+                this.voucherService.incrementUsage(createOrderDto.shippingVoucherCode).catch(err => {
+                    this.logger.error(`Failed to increment shipping voucher usage for ${createOrderDto.shippingVoucherCode}`, err.stack);
+                });
+            }
 
             // Append to Google Sheets (async, don't wait)
             this.googleSheetsService.appendOrderToSheet(order).catch(err => {

@@ -5,7 +5,7 @@ export class VoucherResponseDto {
   code: string;
   name: string;
   description?: string;
-  discountType: 'percentage' | 'fixed';
+  discountType: 'percentage' | 'fixed' | 'free_shipping';
   discountValue: number;
   minOrderAmount: number;
   maxDiscountAmount?: number;

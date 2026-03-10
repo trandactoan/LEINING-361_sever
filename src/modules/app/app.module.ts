@@ -13,6 +13,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { OrdersModule } from '../orders/orders.module';
 import { CommonModule } from '../common/common.module';
 import { VoucherModule } from '../vouchers/voucher.module';
+import { BannerModule } from '../banners/banner.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { VoucherModule } from '../vouchers/voucher.module';
     ImageModule,
     CommonModule,
     VoucherModule,
+    BannerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

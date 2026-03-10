@@ -15,8 +15,8 @@ export class UpdateVoucherDto {
   description?: string;
 
   @IsOptional()
-  @IsEnum(['percentage', 'fixed'])
-  discountType?: 'percentage' | 'fixed';
+  @IsEnum(['percentage', 'fixed', 'free_shipping'])
+  discountType?: 'percentage' | 'fixed' | 'free_shipping';
 
   @IsOptional()
   @IsNumber()

@@ -19,10 +19,10 @@ export class Voucher {
   @Prop()
   description?: string;
 
-  @Prop({ required: true, enum: ['percentage', 'fixed'] })
-  discountType: 'percentage' | 'fixed';
+  @Prop({ required: true, enum: ['percentage', 'fixed', 'free_shipping'] })
+  discountType: 'percentage' | 'fixed' | 'free_shipping';
 
-  @Prop({ required: true })
+  @Prop({ default: 0 })
   discountValue: number;
 
   @Prop({ default: 0 })

@@ -66,6 +66,9 @@ export class Order {
     @Prop()
     voucherCode?: string;
 
+    @Prop()
+    shippingVoucherCode?: string;
+
     @Prop({ default: 0 })
     discountAmount: number;
 

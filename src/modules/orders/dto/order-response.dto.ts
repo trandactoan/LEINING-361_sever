@@ -19,6 +19,9 @@ export class OrderResponseDto {
     }[];
     totalAmount: number;
     totalItems: number;
+    voucherCode?: string;
+    shippingVoucherCode?: string;
+    discountAmount: number;
     status: string;
     checkoutSdkOrderId?: string;
     createdAt: Date;
@@ -43,6 +46,9 @@ export class OrderResponseDto {
         }));
         this.totalAmount = order.totalAmount;
         this.totalItems = order.totalItems;
+        this.voucherCode = order.voucherCode;
+        this.shippingVoucherCode = order.shippingVoucherCode;
+        this.discountAmount = order.discountAmount || 0;
         this.status = order.status;
         this.checkoutSdkOrderId = order.checkoutSdkOrderId;
         this.createdAt = order.createdAt;
