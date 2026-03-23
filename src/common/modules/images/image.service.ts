@@ -80,6 +80,19 @@ export class ImageService {
 		return input;
 	}
 
+	// Delete a file from disk by filename. Silently succeeds if file doesn't exist.
+	deleteFile(filename?: string): void {
+		if (!filename || filename.startsWith('http')) return;
+		try {
+			const filePath = join(IMAGE_PATH, filename);
+			if (fs.existsSync(filePath)) {
+				fs.unlinkSync(filePath);
+			}
+		} catch (_err) {
+			// Swallow errors — deletion is best-effort cleanup
+		}
+	}
+
 	// Build a public URL for an image stored locally (filename)
 	buildPublicUrl(imageRef?: string): string | undefined {
 		if (!imageRef) return undefined;

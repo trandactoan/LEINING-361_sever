@@ -1,4 +1,3 @@
-import { join } from 'path';
 import { Product } from '../product.schema';
 import * as dotenv from 'dotenv';
 import { ProductDetailDto } from './product_detail.dto';
@@ -21,6 +20,7 @@ export class ProductResponseDto {
   sizeGuide?: string;
   soldCount: number;
   sku?: string;
+  comments: { userName: string; avatar?: string; rating: number; content: string; photos: string[] }[];
   variants?: ProductDetailDto[];
   createdAt: Date;
   updatedAt: Date;
@@ -51,6 +51,19 @@ export class ProductResponseDto {
     }
     this.soldCount = product.soldCount || 0;
     this.sku = product.sku;
+    this.comments = (product.comments || [])
+      .filter((c) => c.userName && c.content)
+      .map((c) => ({
+        userName: c.userName,
+        rating: c.rating ?? 5,
+        content: c.content,
+        avatar: c.avatar
+          ? c.avatar.startsWith('http') ? c.avatar : process.env.BASE_IMAGE_URL + 'image/' + c.avatar
+          : undefined,
+        photos: (c.photos || [])
+          .filter((p) => p && !p.startsWith('data:') && !p.includes('/data:'))
+          .map((p) => p.startsWith('http') ? p : process.env.BASE_IMAGE_URL + 'image/' + p),
+      }));
     variants?.map((variant)=>{
       if (variant.variationImage && !variant.variationImage.startsWith('http')) {
         variant.variationImage = process.env.BASE_IMAGE_URL + 'image/' + variant.variationImage;

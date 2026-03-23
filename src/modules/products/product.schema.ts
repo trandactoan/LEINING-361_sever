@@ -77,6 +77,26 @@ export class Product {
   @Prop()
   sku?: string;
 
+  @Prop({
+    type: [
+      {
+        userName: { type: String },
+        avatar: { type: String },
+        rating: { type: Number },
+        content: { type: String },
+        photos: { type: [String], default: [] },
+      },
+    ],
+    default: [],
+  })
+  comments: {
+    userName: string;
+    avatar?: string;
+    rating: number;
+    content: string;
+    photos: string[];
+  }[];
+
   @Prop({ default: new Date() })
   createdAt: Date;
 

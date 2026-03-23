@@ -13,7 +13,7 @@ export class CategoryService extends BaseService<Category> {
     super(CategoryModel);
   }
   async getAllCategories(): Promise<CategoryResponseDto[]> {
-    const categories = await this.CategoryModel.find();
+    const categories = await this.CategoryModel.find().sort({ priority: -1 });
     return categories.map((result) => new CategoryResponseDto(result));
   }
 }

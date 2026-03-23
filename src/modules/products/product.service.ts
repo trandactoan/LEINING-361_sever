@@ -134,11 +134,31 @@ export class ProductService extends BaseService<Product> {
       }
     }
 
+    // Normalize comment photos and avatars — strip base64/malformed values before saving
+    if (Array.isArray(productFields.comments)) {
+      for (const c of productFields.comments) {
+        if (c.avatar && (c.avatar.startsWith('data:') || c.avatar.includes('/data:'))) {
+          c.avatar = undefined;
+        } else if (c.avatar) {
+          c.avatar = await this.imageService.normalizeImageReference(c.avatar).catch(() => c.avatar);
+        }
+        if (Array.isArray(c.photos)) {
+          const cleanedPhotos: string[] = [];
+          for (const p of c.photos) {
+            if (!p || p.startsWith('data:') || p.includes('/data:')) continue;
+            const normalized = await this.imageService.normalizeImageReference(p).catch(() => p);
+            if (normalized) cleanedPhotos.push(normalized);
+          }
+          c.photos = cleanedPhotos;
+        }
+      }
+    }
+
     // Update top-level product fields
     const result = await this.productModel.findByIdAndUpdate(
       objectId,
       { $set: productFields },
-      { new: true, runValidators: true },
+      { new: true },
     ).exec();
 
     // Process variants if provided
@@ -189,6 +209,13 @@ export class ProductService extends BaseService<Product> {
       // Delete variants that were removed in the update payload
       const toDelete = existingIds.filter((idStr) => !processedIds.includes(idStr));
       if (toDelete.length > 0) {
+        // Clean up variationImage files for deleted variants before removing from DB
+        const deletedVariants = existingDetails.filter((d) => toDelete.includes(d._id?.toString()));
+        for (const dv of deletedVariants) {
+          if (dv.variationImage) {
+            this.imageService.deleteFile(dv.variationImage);
+          }
+        }
         await this.productDetailModel.deleteMany({ _id: { $in: toDelete } }).exec();
       }
     }

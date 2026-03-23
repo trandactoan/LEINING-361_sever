@@ -45,4 +45,13 @@ export class UpdateProductDto {
 
   @IsOptional()
   variantOptions?: { name: string; values: string[] }[];
+
+  @IsOptional()
+  comments?: {
+    userName: string;
+    avatar?: string;
+    rating: number;
+    content: string;
+    photos?: string[];
+  }[];
 }

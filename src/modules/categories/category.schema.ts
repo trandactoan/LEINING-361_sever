@@ -11,6 +11,9 @@ export class Category {
 
   @Prop()
   image: string;
+
+  @Prop({ default: 0 })
+  priority: number;
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

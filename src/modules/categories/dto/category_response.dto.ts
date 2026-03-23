@@ -5,6 +5,7 @@ export class CategoryResponseDto {
   id: string;
   name: string;
   image: string;
+  priority: number;
 
   constructor(category: Category) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
@@ -15,5 +16,6 @@ export class CategoryResponseDto {
     } else {
       this.image = category.image;
     }
+    this.priority = category.priority ?? 0;
   }
 }

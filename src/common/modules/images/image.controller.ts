@@ -62,10 +62,9 @@ export class ImageController {
   removeImage(@Param('filename') filename: string) {
     const filePath = join(IMAGE_PATH, filename);
     try {
-      if (!fs.existsSync(filePath)) {
-        throw new BadRequestException('File not found');
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
       }
-      fs.unlinkSync(filePath);
       return { message: 'File deleted', filename };
     } catch (err) {
       throw new BadRequestException(`Failed to delete file: ${err?.message || err}`);

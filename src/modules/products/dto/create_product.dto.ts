@@ -66,4 +66,14 @@ export class CreateProductDto {
   @IsOptional()
   @IsArray()
   variantOptions?: { name: string; values: string[] }[];
+
+  @IsOptional()
+  @IsArray()
+  comments?: {
+    userName: string;
+    avatar?: string;
+    rating: number;
+    content: string;
+    photos?: string[];
+  }[];
 }
