@@ -24,19 +24,10 @@ export class ProductService extends BaseService<Product> {
     categoryId: string,
   ): Promise<ProductResponseDto[]> {
     const products = await this.productModel
-      .find({
-        categoryId: categoryId,
-      })
+      .find({ categoryId })
+      .select('-comments -details -sizeGuide')
       .exec();
-    
-    const productResponses = await Promise.all(
-      products.map(async (product) => {
-        const variants = await this.getProductVariants(product._id.toString());
-        return new ProductResponseDto(product, variants);
-      })
-    );
-    
-    return productResponses;
+    return products.map((product) => new ProductResponseDto(product, []));
   }
 
   async getProductById(productId: string): Promise<ProductResponseDto> {
@@ -51,16 +42,11 @@ export class ProductService extends BaseService<Product> {
   }
 
   async getAll(): Promise<ProductResponseDto[]> {
-    const products = await this.productModel.find().exec();
-    
-    const productResponses = await Promise.all(
-      products.map(async (product) => {
-        const variants = await this.getProductVariants(product._id.toString());
-        return new ProductResponseDto(product, variants);
-      })
-    );
-    
-    return productResponses;
+    const products = await this.productModel
+      .find()
+      .select('-comments -details -sizeGuide')
+      .exec();
+    return products.map((product) => new ProductResponseDto(product, []));
   }
 
   async getProductVariants(productId: string): Promise<ProductDetailDto[]> {

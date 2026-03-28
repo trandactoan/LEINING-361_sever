@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
-import { extname, join, resolve } from 'path';
+import { join, resolve } from 'path';
+import * as sharp from 'sharp';
 
 // Use a safe default inside the project folder if IMAGE_PATH is not provided
 const DEFAULT_IMAGE_SUBPATH = join('var', 'www', 'public', 'image');
 const IMAGE_PATH = resolve(process.env.IMAGE_PATH || join(process.cwd(), DEFAULT_IMAGE_SUBPATH));
 const BASE_IMAGE_URL = process.env.BASE_IMAGE_URL || 'http://localhost:8080/';
+
+const WEBP_QUALITY = 80;
 
 @Injectable()
 export class ImageService {
@@ -14,13 +17,13 @@ export class ImageService {
 			try {
 				fs.mkdirSync(IMAGE_PATH, { recursive: true });
 			} catch (err) {
-				// If creation fails, throw to make caller aware
 				throw err;
 			}
 		}
 	}
 
-	// Accepts a data URL (base64) like `data:image/png;base64,...` and saves it.
+	// Accepts a data URL (base64) like `data:image/png;base64,...`, converts to WebP, and saves it.
+	// SVGs are stored as-is since they are vector format.
 	// Returns the stored filename (not full URL).
 	async saveBase64(dataUrl: string): Promise<string> {
 		this.ensureImagePath();
@@ -30,17 +33,31 @@ export class ImageService {
 		}
 		const mime = matches[1];
 		const b64 = matches[2];
-		const ext = mime.split('/')[1] || 'png';
-		const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.${ext}`;
 		const buffer = Buffer.from(b64, 'base64');
+		const uniqueBase = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+
+		let filename: string;
+		let outputBuffer: Buffer;
+
+		if (mime === 'image/svg+xml') {
+			// Keep SVGs as-is
+			filename = `${uniqueBase}.svg`;
+			outputBuffer = buffer;
+		} else {
+			// Convert all raster formats to WebP
+			filename = `${uniqueBase}.webp`;
+			outputBuffer = await sharp(buffer)
+				.webp({ quality: WEBP_QUALITY })
+				.toBuffer();
+		}
+
 		const filePath = join(IMAGE_PATH, filename);
 		try {
-			await fs.promises.writeFile(filePath, buffer, { flag: 'w' });
+			await fs.promises.writeFile(filePath, outputBuffer, { flag: 'w' });
 		} catch (err) {
-			// wrap and rethrow to provide clearer message
 			throw new Error(`Failed to save image to ${filePath}: ${err?.message || err}`);
 		}
-		return filename; // store filename in DB; product_response will resolve URL
+		return filename;
 	}
 
 	// If given a full URL that points to our BASE_IMAGE_URL, return filename part.
@@ -55,7 +72,6 @@ export class ImageService {
 			// If it's our base image url, extract filename
 			if (input.startsWith(BASE_IMAGE_URL)) {
 				const suffix = input.substring(BASE_IMAGE_URL.length);
-				// suffix could be 'image/filename' or 'image\\filename' or 'image/filename'
 				const parts = suffix.split('/');
 				const filename = parts[parts.length - 1];
 				return filename;
@@ -64,7 +80,7 @@ export class ImageService {
 			return input;
 		}
 
-		// If it looks like a data URL, save it.
+		// If it looks like a data URL, save it (will be converted to WebP).
 		if (input.startsWith('data:')) {
 			const filename = await this.saveBase64(input);
 			return filename;
